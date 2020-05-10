@@ -1,0 +1,82 @@
+import fnmatch as fn
+import os
+import time
+import sys
+
+"""
+The log directory initialisation.
+"""
+
+logdir="F:\\Udemy\\LogDir\\"
+ArchivalFile="Archival.log"
+ts=time.strftime("%Y%m%d%H%M%S")
+FilePath=logdir+ArchivalFile+"_"+ts
+
+def MyLogContents(contents):
+    f=open(FilePath,mode='a')
+    f.write(contents)
+    f.close()    
+
+"""
+1. Arguement  Validation
+Checks whether the right number of Arguments are passed and creates a log file. 
+"""
+if len(sys.argv)!=4:
+    print("Insufficient number of Arguments are Passed.\n")
+    MyLogContents("Insufficient number of Args Passed.\n")
+    sys.exit()
+else:
+    Source=sys.argv[1]+"\\"
+    Dest=sys.argv[2]+"\\"
+    pattern="*"+sys.argv[3]+"*"
+    print("Right number of Arguements are Passed.\n")
+    MyLogContents("Right number of Arguements are Passed.\n")
+    
+"""
+2. Directory  Validation
+Checks whether the source and destination directories are correct and updates the log file. 
+"""
+
+try:
+    FileList=os.listdir(Source)
+except FileNotFoundError:
+    print("Source Path incorrect")
+    MyLogContents("The Source Path {} is incorrect.\n".format(sys.argv[1]))
+    sys.exit()
+
+try:
+    FileList=os.listdir(Dest)
+except FileNotFoundError:
+    print("Destination Path incorrect")
+    MyLogContents("The Destination Path {} is incorrect.\n".format(sys.argv[2]))
+    sys.exit(1)
+
+"""
+3. Files in the Directory Validation
+If there are no files in the source diectory it will update in the log.
+"""
+
+FileList=os.listdir(Source)
+if len(FileList)==0: 
+        print("NO FILES IN THE DIRECTORY")
+        MyLogContents("NO FILES IN THE SOURCE DIRECTORY.\n")
+        sys.exit(1)
+Count=len(FileList)
+
+"""
+4. Checks if The File is Archived with the Pattern Provided.
+"""
+for files in FileList:
+
+    Count=Count-1
+    if fn.fnmatch(files,"*"+pattern+"*")==True:
+        print(files)
+        os.rename(Source+files,Dest+files+'_'+ts)
+        MyLogContents("No Such File With The Pattern {} was Found.\n".format(sys.argv[3]))
+        print("Log is Generated")
+        break
+    elif Count<1:
+        MyLogContents("No Such File With The Pattern {} was Found.\n".format(sys.argv[3]))
+        print("No Such File With The Pattern {} was Found. Log is Generated.\n".format(sys.argv[3]))
+        
+        
